@@ -14,10 +14,6 @@ export const GET_MY_NOTES = gql`
       description
       created_at
       is_completed
-      user {
-        name
-        id
-      }
     }
   }
 `;

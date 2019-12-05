@@ -10,11 +10,11 @@ const ADD_TODO = gql`
     ) {
       affected_rows
       returning {
-        created_at
-        description
         id
-        is_public
         title
+        description
+        created_at
+        is_completed
       }
     }
   }
@@ -32,11 +32,9 @@ const NoteInput = ({ isPublic = false }) => {
     const existingNotes = cache.readQuery({
       query: GET_MY_NOTES
     });
-    console.log(existingNotes);
 
     // add new notes to the cache
     const newNote = data.insert_notes.returning[0];
-    console.log(newNote);
     cache.writeQuery({
       query: GET_MY_NOTES,
       data: { notes: [newNote, ...existingNotes.notes] }
@@ -64,17 +62,20 @@ const NoteInput = ({ isPublic = false }) => {
     >
       <input
         className="title"
-        placeholder="title"
+        placeholder="Title"
         value={title}
         onChange={e => setTitle(e.target.value)}
       />
       <textarea
-        placeholder="description"
+        placeholder="Description"
         className="description"
         value={description}
+        rows={10}
         onChange={e => setDescripton(e.target.value)}
       />
-      <button type="submit">Submit</button>
+      <button type="submit" className="button">
+        Submit
+      </button>
     </form>
   );
 };

@@ -21,20 +21,32 @@ code {
 }
 
 .title,
+.button {
+  font-size: 2em;
+  border-radius: 0.25rem;
+  box-sizing: border-box;
+  font-size: 1rem;
+  line-height: 2rem;
+  padding: 0.25rem;
+  background-color: #acacf3;
+  border: 1px solid #fbfbfb;
+}
+
 .description {
-  font-size: 1.25em;
+  width: 300px;
 }
 
 .noteWrapper {
   padding: 1em;
   border: 1px solid blue;
+  background-color: #acacf3;
   margin-bottom: 1em;
 }
 
 .noteCard {
   display: flex;
   flex-flow: column wrap;
-  max-width: 500px;
+  max-width: 700px;
 }
 .noteCard h1 {
   margin: 0;
@@ -42,9 +54,18 @@ code {
 
 .noteWrapper .delete {
   float: right;
+  text-align: right;
 }
 .noteList {
   list-style-type: none;
   padding: 0;
   margin: 0;
+}
+
+.logout {
+  position: absolute;
+  right: 100px;
+}
+
+.submit-btn {
 }

@@ -10,38 +10,78 @@ const TOGGLE_COMPLETE = gql`
       _set: { is_completed: $isCompleted }
     ) {
       affected_rows
+      returning {
+        id
+        title
+        description
+        created_at
+        is_completed
+      }
+    }
+  }
+`;
+
+const DELETE_NOTE = gql`
+  mutation removeTodo($id: Int!) {
+    delete_notes(where: { id: { _eq: $id } }) {
+      affected_rows
+      returning {
+        id
+        title
+        description
+        created_at
+        is_completed
+      }
     }
   }
 `;
 
 const Note = ({ title, description, is_completed, id }) => {
-  console.log(id, is_completed);
   const [toggle] = useMutation(TOGGLE_COMPLETE);
+  const [deleteNote] = useMutation(DELETE_NOTE);
 
   const toggleComplete = () => {
     toggle({
-      variables: { id, isCompleted: !is_completed }
-      //   optimisticResponse: null,
-      //   update: cache => {
-      //     const existingNotes = cache.readQuery({ query: GET_MY_NOTES });
-      //     const newNotes = existingNotes.notes.map(t => {
-      //       if (t.id === id) {
-      //         return { ...t, is_completed: !t.is_completed };
-      //       } else {
-      //         return t;
-      //       }
-      //     });
-      //     console.table(newNotes.notes);
-      //     cache.writeQuery({
-      //       query: GET_MY_NOTES,
-      //       data: { Notes: newNotes }
-      //     });
-      //   }
+      variables: { id, isCompleted: !is_completed },
+      optimisticResponse: null,
+      update: cache => {
+        const existingNotes = cache.readQuery({ query: GET_MY_NOTES });
+        const newNotes = existingNotes.notes.map(t => {
+          if (t.id === id) {
+            return { ...t, is_completed: !is_completed };
+          } else {
+            return t;
+          }
+        });
+
+        cache.writeQuery({
+          query: GET_MY_NOTES,
+          data: { notes: newNotes }
+        });
+      }
     });
   };
+
+  const handleDelete = () => {
+    deleteNote({
+      variables: { id },
+      optimisticResponse: null,
+      update: cache => {
+        const existingNotes = cache.readQuery({ query: GET_MY_NOTES });
+        const newNotes = existingNotes.notes.filter(t => t.id !== id);
+        cache.writeQuery({
+          query: GET_MY_NOTES,
+          data: { notes: newNotes }
+        });
+      }
+    });
+  };
+
   return (
     <section className="noteWrapper">
-      <span className="delete">X</span>
+      <button className="delete" onClick={handleDelete}>
+        <span>X</span>
+      </button>
       <div className="noteCard">
         <h1>{title}</h1>
         <p>{description}</p>
